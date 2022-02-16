@@ -45,7 +45,7 @@ const paths = {
   buildImgFolder: `${buildFolder}/img`,
   srcScss: `${srcFolder}/scss/**/*.scss`,
   buildCssFolder: `${buildFolder}/css`,
-  srcFullJs: `${srcFolder}/js/**/*.js`,
+  // srcFullJs: `${srcFolder}/js/**/*.js`,
   srcMainJs: `${srcFolder}/js/main.js`,
   buildJsFolder: `${buildFolder}/js`,
   srcPartialsFolder: `${srcFolder}/partials`,
@@ -134,84 +134,84 @@ const stylesBackend = () => {
 };
 
 // scripts
-const scripts = () => {
-  return src(paths.srcMainJs)
-    .pipe(plumber(
-      notify.onError({
-        title: "JS",
-        message: "Error: <%= error.message %>"
-      })
-    ))
-    .pipe(webpackStream({
-      mode: isProd ? 'production' : 'development',
-      output: {
-        filename: 'main.js',
-      },
-      module: {
-        rules: [{
-          test: /\.m?js$/,
-          exclude: /node_modules/,
-          use: {
-            loader: 'babel-loader',
-            options: {
-              presets: [
-                ['@babel/preset-env', {
-                  targets: "defaults"
-                }]
-              ]
-            }
-          }
-        }]
-      },
-      devtool: !isProd ? 'source-map' : false
-    }))
-    .on('error', function (err) {
-      console.error('WEBPACK ERROR', err);
-      this.emit('end');
-    })
-    .pipe(dest(paths.buildJsFolder))
-    .pipe(browserSync.stream());
-}
+// const scripts = () => {
+//   return src(paths.srcMainJs)
+//     .pipe(plumber(
+//       notify.onError({
+//         title: "JS",
+//         message: "Error: <%= error.message %>"
+//       })
+//     ))
+//     .pipe(webpackStream({
+//       mode: isProd ? 'production' : 'development',
+//       output: {
+//         filename: 'main.js',
+//       },
+//       module: {
+//         rules: [{
+//           test: /\.m?js$/,
+//           exclude: /node_modules/,
+//           use: {
+//             loader: 'babel-loader',
+//             options: {
+//               presets: [
+//                 ['@babel/preset-env', {
+//                   targets: "defaults"
+//                 }]
+//               ]
+//             }
+//           }
+//         }]
+//       },
+//       devtool: !isProd ? 'source-map' : false
+//     }))
+//     .on('error', function (err) {
+//       console.error('WEBPACK ERROR', err);
+//       this.emit('end');
+//     })
+//     .pipe(dest(paths.buildJsFolder))
+//     .pipe(browserSync.stream());
+// }
 
 // scripts backend
-const scriptsBackend = () => {
-  return src(paths.srcMainJs)
-    .pipe(plumber(
-      notify.onError({
-        title: "JS",
-        message: "Error: <%= error.message %>"
-      })
-    ))
-    .pipe(webpackStream({
-      mode: 'development',
-      output: {
-        filename: 'main.js',
-      },
-      module: {
-        rules: [{
-          test: /\.m?js$/,
-          exclude: /node_modules/,
-          use: {
-            loader: 'babel-loader',
-            options: {
-              presets: [
-                ['@babel/preset-env', {
-                  targets: "defaults"
-                }]
-              ]
-            }
-          }
-        }]
-      },
-      devtool: false
-    }))
-    .on('error', function (err) {
-      console.error('WEBPACK ERROR', err);
-      this.emit('end');
-    })
-    .pipe(dest(paths.buildJsFolder))
-    .pipe(browserSync.stream());
-}
+// const scriptsBackend = () => {
+//   return src(paths.srcMainJs)
+//     .pipe(plumber(
+//       notify.onError({
+//         title: "JS",
+//         message: "Error: <%= error.message %>"
+//       })
+//     ))
+//     .pipe(webpackStream({
+//       mode: 'development',
+//       output: {
+//         filename: 'main.js',
+//       },
+//       module: {
+//         rules: [{
+//           test: /\.m?js$/,
+//           exclude: /node_modules/,
+//           use: {
+//             loader: 'babel-loader',
+//             options: {
+//               presets: [
+//                 ['@babel/preset-env', {
+//                   targets: "defaults"
+//                 }]
+//               ]
+//             }
+//           }
+//         }]
+//       },
+//       devtool: false
+//     }))
+//     .on('error', function (err) {
+//       console.error('WEBPACK ERROR', err);
+//       this.emit('end');
+//     })
+//     .pipe(dest(paths.buildJsFolder))
+//     .pipe(browserSync.stream());
+// }
 
 const resources = () => {
   return src(`${paths.resourcesFolder}/**`)
@@ -265,7 +265,7 @@ const watchFiles = () => {
   });
 
   watch(paths.srcScss, styles);
-  watch(paths.srcFullJs, scripts);
+  // watch(paths.srcFullJs, scripts);
   watch(`${paths.srcPartialsFolder}/*.html`, htmlInclude);
   watch(`${srcFolder}/*.html`, htmlInclude);
   watch(`${paths.resourcesFolder}/**`, resources);
@@ -326,11 +326,11 @@ const toProd = (done) => {
   done();
 };
 
-exports.default = series(clean, htmlInclude, scripts, styles, resources, images, webpImages, avifImages, svgSprites, watchFiles);
+exports.default = series(clean, htmlInclude, styles, resources, images, webpImages, avifImages, svgSprites, watchFiles);
 
-exports.backend = series(clean, htmlInclude, scriptsBackend, stylesBackend, resources, images, webpImages, avifImages, svgSprites)
+exports.backend = series(clean, htmlInclude, stylesBackend, resources, images, webpImages, avifImages, svgSprites)
 
-exports.build = series(toProd, clean, htmlInclude, scripts, styles, resources, images, webpImages, avifImages, svgSprites, htmlMinify);
+exports.build = series(toProd, clean, htmlInclude, styles, resources, images, webpImages, avifImages, svgSprites, htmlMinify);
 
 exports.cache = series(cache, rewrite);
 
